@@ -14,6 +14,8 @@
 #define IMAGEN_H
 
 #define STB_IMAGE_IMPLEMENTATION
+#include <string>
+
 #include "stb/stb_image.h"
 
 #define STBI_MSC_SECURE_CRT
@@ -35,9 +37,11 @@ private:
     char* nombre;
     
 public:
-    Imagen(char* nombre){
-        this->nombre = nombre;
-        this->imagen = stbi_load(nombre, &this->ancho, &this->alto, &this->canales, 0);
+    Imagen(string nombre){
+        this->nombre = new char[nombre.length() + 1];
+        strcpy(this->nombre, nombre.c_str());
+        
+        this->imagen = stbi_load(this->nombre, &this->ancho, &this->alto, &this->canales, 0);
     }
     
     unsigned char* getPixel(int x, int y){
@@ -51,8 +55,13 @@ public:
         stbi_write_jpg(this->nombre, this->ancho, this->alto, 3, this->imagen, 100);
     }
     
-    void guardarJPG(char* nombre){
-        stbi_write_jpg(nombre, this->ancho, this->alto, 3, this->imagen, 100);
+    void guardarJPG(string nombre){
+        char *cstr = new char[nombre.length() + 1];
+        strcpy(cstr, nombre.c_str());
+        
+        stbi_write_jpg(cstr, this->ancho, this->alto, 3, this->imagen, 100);
+        
+        delete [] cstr;
     }
     
     void cerrar(){
