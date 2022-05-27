@@ -32,9 +32,20 @@ private:
     // RBG, RGBA ...
     int canales;
     
-    unsigned char *imagen;
+    unsigned char* imagen;
     
     char* nombre;
+    
+    /*
+     * Define imagen como una imagen en blanco
+     */
+    void iniciarImagen(){
+        int tam = this->alto * this->ancho * this->canales;
+        this->imagen = new unsigned char[tam];
+        
+        for (int i = 0; i < tam; i++) 
+            this->imagen[i] = 255;
+    }
     
 public:
     Imagen(string nombre){
@@ -42,6 +53,16 @@ public:
         strcpy(this->nombre, nombre.c_str());
         
         this->imagen = stbi_load(this->nombre, &this->ancho, &this->alto, &this->canales, 0);
+    }
+    Imagen(string nombre, int alto, int ancho, int canales){
+        this->nombre = new char[nombre.length() + 1];
+        strcpy(this->nombre, nombre.c_str());
+        
+        this->alto = alto;
+        this->ancho = ancho;
+        this->canales = canales;
+        
+        iniciarImagen();
     }
     
     unsigned char* getPixel(int x, int y){

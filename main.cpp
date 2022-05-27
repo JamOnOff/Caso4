@@ -15,6 +15,7 @@
 
 #include "Imagen.h"
 #include "Random.h"
+#include "Grupo.h"
 
 
 using namespace std;
@@ -27,37 +28,97 @@ double distancia(double x1, double y1, double x2, double y2){
  * 
  */
 int main(int argc, char** argv) {
-    
-    Imagen* im = new Imagen("cara.jpg");
-    
+    Imagen* im = new Imagen("cara3.jpg");
     int dim = im->getAlto(); // dimencion (alto = ancho)
     
-    //puntos
+    Random* random = new Random();
+    
     float porcentaje = 0.05;
-    int puntos = dim * dim * porcentaje;
     
-     
-    Random* r = new Random();
+    // Genera los puntos del circulo a seleccionar
+    int cantPuntosCir = M_PI * (dim/2) * (dim/2);
     
-    unsigned char* p;
-    int pX, pY;
-    for (int i = 0; i < puntos; i++) {
-        
-        pX = r->getNum(0, dim);
-        pY = r->getNum(0, dim);
-        p = im->getPixel(pX, pY);
-        
-        if((p[0] == 0 && p[1] == 0 && p[2] == 0) || distancia(pX, pY, dim/2, dim/2) > dim/2){
-            i--;
-            continue;
-        }
+    auto puntos = new int[cantPuntosCir][2];
+    int pos = 0;
+    
+    for (int i = 0; i < dim; i++)
+        for (int j = 0; j < dim; j++)
+            if(distancia(j, i, dim/2, dim/2) < dim/2){
+                puntos[pos][0] = j;
+                puntos[pos][1] = i;
+                pos++;
+            }
+    
 
-        p[0] = 0;
-        p[1] = 0;
-        p[2] = 0;
-        
+    int posFin;
+    for(int i = cantPuntosCir - 1; i >= 0; i--){
+        if(puntos[i][0] != 0 || puntos[i][1] != 0){
+            posFin = i;
+            break;
+        }
     }
     
+    
+    // posFin (ultima posición del array de puntos a seleccionar)
+    // pos (posición del array seleccionada)
+    
+    unsigned char* color;
+    int x;
+    int y;
+    
+    list<Grupo*> grupos;
+    unsigned char rangoColor = 10;
+    int rango = 45;
+    
+    Imagen* imPrueba = new Imagen("prueba.jpg", dim, dim, 3);
+    
+    int cantSelec = dim * dim * porcentaje;
+    for (int i = 0; i < cantSelec; i++) {
+        pos = random->getNum(0, posFin+1);
+        
+        x = puntos[pos][0];
+        y = puntos[pos][1];
+        
+        color = im->getPixel(x, y);
+        
+        
+        Grupo* g;
+        bool agregar = true;
+        list<Grupo*>::iterator itFin = grupos.end();
+        for (list<Grupo*>::iterator it = grupos.begin(); it != itFin; ++it) {
+            g = *it;
+            if(g->isCercano(x, y, color)){
+                g->addPunto(x, y, color);
+                agregar = false;
+                break;
+            }
+        }
+        
+        if(agregar){
+            g = new Grupo(x, y, color, rangoColor, rango, dim);
+            grupos.push_back(g);
+        }
+        
+        
+        //Pasar el punto final a la posicion del seleccionado
+        puntos[pos][0] = puntos[posFin][0];
+        puntos[pos][1] = puntos[posFin][1];
+        posFin--;
+    }
+    
+    Grupo* g;
+    list<Grupo*>::iterator itFin = grupos.end();
+    for (list<Grupo*>::iterator it = grupos.begin(); it != itFin; ++it) {
+        g = *it;
+        
+        if(g->getCantidad() > dim*0.10 || g->getCantidad() < 10)
+            continue;
+        
+        g->pintarArea(im);
+        g->pintar(imPrueba);
+    }
+    
+    imPrueba->guardarJPG();
     
     im->guardarJPG("caraSalida.jpg");
     
