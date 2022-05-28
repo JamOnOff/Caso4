@@ -46,7 +46,6 @@ private:
         for (int i = 0; i < tam; i++) 
             this->imagen[i] = 255;
     }
-    
 public:
     Imagen(string nombre){
         this->nombre = new char[nombre.length() + 1];
@@ -63,6 +62,21 @@ public:
         this->canales = canales;
         
         iniciarImagen();
+    }
+    
+    void limpiar(unsigned char* color){
+        int tam = this->alto * this->ancho * this->canales;
+        for (int i = 0; i < tam; i += canales){
+            this->imagen[i] = color[0];
+            this->imagen[i + 1] = color[1];
+            this->imagen[i + 2] = color[2];
+        }
+    }
+    
+    void limpiar(unsigned char color){
+        int tam = this->alto * this->ancho * this->canales;
+        for (int i = 0; i < tam; i++) 
+            this->imagen[i] = color;
     }
     
     unsigned char* getPixel(int x, int y){

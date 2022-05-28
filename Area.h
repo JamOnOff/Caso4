@@ -17,6 +17,10 @@
 
 #include "Imagen.h"
 
+double distancia(double x1, double y1, double x2, double y2){
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+}
+
 class Area{
 private:
     int* puntoInicio;
@@ -97,35 +101,7 @@ public:
     
     void pintarAreaColorPromedio(Imagen* im, unsigned char* c){
         unsigned char* color;
-        /*
-        for (int i = this->puntoInicio[0]; i < this->puntoFin[0]; i++) {
-            color = im->getPixel(i, this->puntoInicio[1]);
-            
-            color[0] = 255;
-            color[1] = 0;
-            color[2] = 0;
-            
-            color = im->getPixel(i, this->puntoFin[1]);
-            
-            color[0] = 255;
-            color[1] = 0;
-            color[2] = 0;
-        }
-        
-        for (int i = this->puntoInicio[1]; i < this->puntoFin[1]; i++) {
-            color = im->getPixel(this->puntoInicio[0], i);
-            
-            color[0] = 255;
-            color[1] = 0;
-            color[2] = 0;
-            
-            color = im->getPixel(this->puntoFin[0], i);
-            
-            color[0] = 255;
-            color[1] = 0;
-            color[2] = 0;
-        }
-        */
+         
         for (int i = this->puntoInicio[1]; i < this->puntoFin[1]; i++) {
            for (int j = this->puntoInicio[0]; j < this->puntoFin[0]; j++) {
                color = im->getPixel(j, i);
@@ -187,6 +163,9 @@ public:
         return ret;
     }
     
+    bool muyGrande(int dim){
+        return distancia(this->puntoInicio[0], this->puntoInicio[1], this->puntoFin[0], this->puntoFin[1]) > dim - this->rango;
+    }
     
     void setRango(int rango) {
         this->rango = rango;

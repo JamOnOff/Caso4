@@ -12,16 +12,71 @@
 
 #include <iostream>
 #include <complex>
+#include <vector>
 
 #include "Imagen.h"
 #include "Random.h"
 #include "Grupo.h"
 
+#include "cromodistribution.h"
+#include "geneticbase.h"
+#include "Frame.h"
 
 using namespace std;
 
-double distancia(double x1, double y1, double x2, double y2){
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+cromodistribution* definirRepCrom(list<Grupo*> grupos){
+    int cantGrupos = grupos.size();
+    
+    cromodistribution* dist = new cromodistribution[cantGrupos];
+    
+    Grupo* g;
+    list<Grupo*>::iterator itFin = grupos.end();
+    int cantPuntos = 0;
+    
+    for (list<Grupo*>::iterator it = grupos.begin(); it != itFin; ++it) {
+        g = *it;
+        
+        cantPuntos += g->getCantidad();
+        
+    }
+    
+    int pos = 0;
+    float porcMaxAnt = 0; // porcentaje maximo del grupo anterior
+    unsigned int maxValueAnt = 0; // valor máximo anterior
+    int cantPuntosGrupo;
+    for (list<Grupo*>::iterator it = grupos.begin(); it != itFin; ++it) {
+        g = *it;
+        
+        cantPuntosGrupo = g->getCantidad();
+        
+        
+        dist[pos].totalPopulation = cantPuntos;
+        
+        dist[pos].quantity = cantPuntosGrupo;
+        
+        float porcentaje = cantPuntosGrupo / float(cantPuntos);
+        
+        dist[pos].minProbability = porcMaxAnt;
+        porcMaxAnt += porcentaje;
+        dist[pos].maxProbability = porcMaxAnt;
+        
+        dist[pos].minValue = maxValueAnt;
+        
+        if(pos == cantGrupos-1)
+            dist[pos].maxValue = CROMO_MAX_VALUE;
+        else{
+            maxValueAnt += float(CROMO_MAX_VALUE) * porcentaje;
+            dist[pos].maxValue = maxValueAnt;
+        }
+        dist[pos].color = g->getColorRango()->getColorPromedio();
+        
+        dist[pos].puntoInicio = g->getArea()->getPuntoInicio();
+        dist[pos].puntoFin = g->getArea()->getPuntoFin();
+        
+        pos++;
+    }
+    
+    return dist;
 }
 
 /*
@@ -68,12 +123,14 @@ int main(int argc, char** argv) {
     
     list<Grupo*> grupos;
     unsigned char rangoColor = 5;
-    int rango = 20;
+    int rango = 15;
     
     
-    
+    // Selecciona los puntos del circulo y los asocia con un grupo
+    // según su color y distancia
     int cantSelec = dim * dim * porcentaje;
     for (int i = 0; i < cantSelec; i++) {
+        
         pos = random->getNum(0, posFin+1);
         
         x = puntos[pos][0];
@@ -105,21 +162,22 @@ int main(int argc, char** argv) {
         puntos[pos][1] = puntos[posFin][1];
         posFin--;
     }
-    cout << grupos.size() << endl;
+    
+    
+    // Elimina los grupos con más de 1080*0.2 puntos y los de area mayor a 1080-rango 
     Grupo* g;
-    
     list<Grupo*>::iterator itFin = grupos.end();
-    
     for (list<Grupo*>::iterator it = grupos.begin(); it != itFin; ++it) {
         g = *it;
 
-        if(g->getCantidad() > dim*0.2){
+        if(g->getCantidad() > dim*0.2 || g->getArea()->muyGrande(dim)){
             
             it = grupos.erase(it);
             --it;
         }
     }
     
+    // Une los grupos cercanos con color similar
     Grupo* gSig;
     itFin = grupos.end();
     list<Grupo*>::iterator itFin2 = grupos.end();
@@ -147,12 +205,13 @@ int main(int argc, char** argv) {
                 
                 itSig = grupos.erase(itSig);
                 --itSig;
-                
             }
+            
         }
+        
     }
-    cout << grupos.size() << endl;
     
+    // Guarda las imagenes puntos y areas
     Imagen* imPuntos = new Imagen("puntos.jpg", dim, dim, 3);
     Imagen* imAreasColor = new Imagen("areasColor.jpg", dim, dim, 3);
     
@@ -170,8 +229,38 @@ int main(int argc, char** argv) {
     imAreasColor->guardarJPG();
     
     im->guardarJPG("caraAreas.jpg");
+    /*
+    for (int i = 0; i < grupos.size(); i++) {
+        cout << i << endl;
+        cout << dist[i].puntoInicio[0] << "," << dist[i].puntoInicio[1] << "; " 
+             << dist[i].puntoFin[0] << "," << dist[i].puntoFin[1] << "; "
+             << int(dist[i].color[0]) << "," << int(dist[i].color[1]) << "," << int(dist[i].color[2]) << "; "
+             << to_string(dist[i].minValue) << "," << to_string(dist[i].maxValue) << "; "
+             << dist[i].minProbability << "," << dist[i].maxProbability << "; "
+             << dist[i].quantity << "," << dist[i].totalPopulation << "\n";
+    }
+    */
     
-            
+    GeneticBase* genetic = new GeneticBase(dim, random);
+    cromodistribution* dist = definirRepCrom(grupos);
+    
+    int cantGrupos = grupos.size();
+    for (int i = 0; i < cantGrupos; i++) 
+        genetic->addDistribution(&dist[i]);
+    
+    genetic->initPopulation(100000);
+    
+    Frame* frame = new Frame(genetic->getPopulation(), random, dim);
+    for (int i = 0; i < 1000; i++) {
+        for (int j = 0; j < 3; j++)
+            frame->mover();
+
+        
+        genetic->produceGenerations(1,10000);
+        frame->guardarFrame();
+    }
+    
+    
     return 0;
 }
 

@@ -33,8 +33,8 @@ private:
 
     list<double> numeros;
     
-    int max;
-    int cantidad = 0;
+    double max;
+    double cantidad = 0;
     
     thread h;
     
@@ -62,7 +62,7 @@ public:
         
         h = thread(&Random::generar, this);
     }
-    Random(int max){
+    Random(double max){
         if(max > 0)
             this->max = max;
         else
@@ -74,25 +74,35 @@ public:
         h = thread(&Random::generar, this);
     }
     
-    double getNum(int min, int max){
+    double getNum(double min, double max){
         while(this->numeros.size() < 5){
         } // espera si no hay números
         
         this->cantidad--;
-        float num = this->numeros.front();
+        double num = this->numeros.front();
         this->numeros.pop_front();
         
-        return (num * float(max)) + float(min);
+        return (num * double(max)) + double(min);
     }
-    double getNum(int max){
+    double getNum(double max){
         while(this->numeros.size() < 2){
         } // espera si no hay números
         
         this->cantidad--;
-        float num = this->numeros.front();
+        double num = this->numeros.front();
         this->numeros.pop_front();
         
-        return (num * float(max));
+        return (num * double(max));
+    }
+    double getNum(){
+        while(this->numeros.size() < 2){
+        } // espera si no hay números
+        
+        this->cantidad--;
+        double num = this->numeros.front();
+        this->numeros.pop_front();
+        
+        return num;
     }
 };
 

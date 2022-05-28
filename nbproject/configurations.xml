@@ -6,9 +6,13 @@
                    projectFiles="true">
       <itemPath>Area.h</itemPath>
       <itemPath>ColorRango.h</itemPath>
+      <itemPath>Frame.h</itemPath>
       <itemPath>Grupo.h</itemPath>
       <itemPath>Imagen.h</itemPath>
       <itemPath>Random.h</itemPath>
+      <itemPath>cromodistribution.h</itemPath>
+      <itemPath>geneticbase.h</itemPath>
+      <itemPath>individual.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -45,11 +49,19 @@
       </item>
       <item path="ColorRango.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Frame.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Grupo.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Imagen.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Random.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="cromodistribution.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="geneticbase.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="individual.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -78,11 +90,19 @@
       </item>
       <item path="ColorRango.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Frame.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Grupo.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Imagen.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="Random.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="cromodistribution.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="geneticbase.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="individual.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
