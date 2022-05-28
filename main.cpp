@@ -28,7 +28,7 @@ double distancia(double x1, double y1, double x2, double y2){
  * 
  */
 int main(int argc, char** argv) {
-    Imagen* im = new Imagen("cara3.jpg");
+    Imagen* im = new Imagen("cara1.jpg");
     int dim = im->getAlto(); // dimencion (alto = ancho)
     
     Random* random = new Random();
@@ -67,10 +67,10 @@ int main(int argc, char** argv) {
     int y;
     
     list<Grupo*> grupos;
-    unsigned char rangoColor = 10;
-    int rango = 45;
+    unsigned char rangoColor = 5;
+    int rango = 20;
     
-    Imagen* imPrueba = new Imagen("prueba.jpg", dim, dim, 3);
+    
     
     int cantSelec = dim * dim * porcentaje;
     for (int i = 0; i < cantSelec; i++) {
@@ -105,24 +105,72 @@ int main(int argc, char** argv) {
         puntos[pos][1] = puntos[posFin][1];
         posFin--;
     }
-    
+    cout << grupos.size() << endl;
     Grupo* g;
+    
     list<Grupo*>::iterator itFin = grupos.end();
+    
     for (list<Grupo*>::iterator it = grupos.begin(); it != itFin; ++it) {
         g = *it;
-        
-        if(g->getCantidad() > dim*0.10 || g->getCantidad() < 10)
-            continue;
-        
-        g->pintarArea(im);
-        g->pintar(imPrueba);
+
+        if(g->getCantidad() > dim*0.2){
+            
+            it = grupos.erase(it);
+            --it;
+        }
     }
     
-    imPrueba->guardarJPG();
+    Grupo* gSig;
+    itFin = grupos.end();
+    list<Grupo*>::iterator itFin2 = grupos.end();
+    --itFin2;
+    for (list<Grupo*>::iterator it = grupos.begin(); it != itFin2; ++it) {
+        g = *it;
+        
+        g->getColorRango()->setRango(rangoColor*1.25);
+        g->getArea()->setRango(rango*2.5);
+        
+        for (list<Grupo*>::iterator itSig = it; itSig != itFin; ++itSig) {
+            if(itSig == it)
+                continue;
+            
+            gSig = *itSig;
+            
+            gSig->getColorRango()->setRango(rangoColor*1.25);
+            gSig->getArea()->setRango(rango*2.5);
+            
+            if(g->colision(gSig)){
+                g->unir(gSig);
+                
+                if(itSig == itFin2)
+                    --itFin2;
+                
+                itSig = grupos.erase(itSig);
+                --itSig;
+                
+            }
+        }
+    }
+    cout << grupos.size() << endl;
     
-    im->guardarJPG("caraSalida.jpg");
+    Imagen* imPuntos = new Imagen("puntos.jpg", dim, dim, 3);
+    Imagen* imAreasColor = new Imagen("areasColor.jpg", dim, dim, 3);
     
-    im->cerrar();
+    itFin = grupos.end();
+    for (list<Grupo*>::iterator it = grupos.begin(); it != itFin; ++it) {
+        
+        g = *it;
+        
+        g->pintarArea(im);
+        g->pintar(imPuntos);
+        g->pintarAreaColorPromedio(imAreasColor, g->getColorRango()->getColorPromedio());
+    }
+    
+    imPuntos->guardarJPG();
+    imAreasColor->guardarJPG();
+    
+    im->guardarJPG("caraAreas.jpg");
+    
             
     return 0;
 }

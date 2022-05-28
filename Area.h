@@ -93,7 +93,55 @@ public:
             color[2] = 0;
         }
         
-         
+    }
+    
+    void pintarAreaColorPromedio(Imagen* im, unsigned char* c){
+        unsigned char* color;
+        /*
+        for (int i = this->puntoInicio[0]; i < this->puntoFin[0]; i++) {
+            color = im->getPixel(i, this->puntoInicio[1]);
+            
+            color[0] = 255;
+            color[1] = 0;
+            color[2] = 0;
+            
+            color = im->getPixel(i, this->puntoFin[1]);
+            
+            color[0] = 255;
+            color[1] = 0;
+            color[2] = 0;
+        }
+        
+        for (int i = this->puntoInicio[1]; i < this->puntoFin[1]; i++) {
+            color = im->getPixel(this->puntoInicio[0], i);
+            
+            color[0] = 255;
+            color[1] = 0;
+            color[2] = 0;
+            
+            color = im->getPixel(this->puntoFin[0], i);
+            
+            color[0] = 255;
+            color[1] = 0;
+            color[2] = 0;
+        }
+        */
+        for (int i = this->puntoInicio[1]; i < this->puntoFin[1]; i++) {
+           for (int j = this->puntoInicio[0]; j < this->puntoFin[0]; j++) {
+               color = im->getPixel(j, i);
+
+               color[0] = c[0];
+               color[1] = c[1];
+               color[2] = c[2];
+           }
+       }
+    }
+    void unir(Area* a){
+        int* puntoInicio = a->puntoInicio;
+        int* puntoFin = a->puntoFin;
+        
+        addPunto(puntoInicio);
+        addPunto(puntoFin);
     }
     
     void addPunto(int x, int y){
@@ -118,6 +166,15 @@ public:
            
     }
     
+    bool isArea(Area* a){
+        int* puntoInicio = a->puntoInicio;
+        int* puntoFin = a->puntoFin;
+        
+        return isArea(puntoInicio) || isArea(puntoFin) || isArea(puntoInicio[0], puntoFin[1]) || isArea(puntoFin[0], puntoInicio[1])
+            || a->isArea(this->puntoInicio) || a->isArea(this->puntoFin) || a->isArea(this->puntoInicio[0], this->puntoFin[1]) 
+            || a->isArea(this->puntoFin[0], this->puntoInicio[1]) ;
+    }
+    
     bool isArea(int x, int y){
         int* punto = new int[2];
         punto[0] = x;
@@ -130,6 +187,16 @@ public:
         return ret;
     }
     
+    
+    void setRango(int rango) {
+        this->rango = rango;
+    }
+
+    
+    int getRango() const {
+        return rango;
+    }
+
     int* getPuntoFin(){
         return puntoFin;
     }

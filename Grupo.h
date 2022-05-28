@@ -47,6 +47,21 @@ public:
         this->cantidad = 1;
     }
     
+    bool colision(Grupo* g){
+        ColorRango* colorRango = g->getColorRango();
+        return (colorRango->isRango(this->colorRango->getColorPromedio()) || this->colorRango->isRango(colorRango->getColorPromedio()))
+                && this->area->isArea(g->getArea());
+    }
+    
+    void unir(Grupo* g){
+        this->area->unir(g->getArea());
+        this->colorRango->addColor(g->getColorRango()->getColorPromedio());
+        
+        list<int*> puntos = g->getPuntos();
+        this->puntos.splice(this->puntos.end(), puntos);
+        this->cantidad += g->getCantidad();
+    }
+    
     void pintar(Imagen* im){
         int* punto;
         unsigned char* colorProm = this->colorRango->getColorPromedio();
@@ -65,6 +80,10 @@ public:
     }
     void pintarArea(Imagen* im){
         this->area->pintarArea(im);
+    }
+    
+    void pintarAreaColorPromedio(Imagen* im, unsigned char* c){
+        this->area->pintarAreaColorPromedio(im, c);
     }
     
     bool isCercano(int x, int y, unsigned char* color){
@@ -97,6 +116,19 @@ public:
     int getCantidad() const {
         return cantidad;
     }
+    
+    Area* getArea() const {
+        return area;
+    }
+
+    ColorRango* getColorRango() const {
+        return colorRango;
+    }
+    
+    list<int*> getPuntos() {
+        return puntos;
+    }
+    
 };
 
 #endif /* GRUPO_H */

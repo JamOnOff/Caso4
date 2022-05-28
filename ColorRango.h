@@ -83,6 +83,15 @@ public:
         
         return colorProm;
     }
+    
+    unsigned char getRango() const {
+        return rango;
+    }
+
+    void setRango(unsigned char rango) {
+        this->rango = rango;
+    }
+
 };
 
 #endif /* COLORRANGO_H */
